@@ -12,15 +12,17 @@ import {
   HiOutlineTrash,
 } from 'react-icons/hi';
 import { Button } from './ui/button';
-import { IProduct } from '@/types/globalTypes';
+import { useAppSelector } from '@/redux/hook';
+import { useDispatch } from 'react-redux';
+import {
+  addToCart,
+  removeFromCart,
+  removeOne,
+} from '@/redux/features/cart/cartSlice';
 
 export default function Cart() {
-  //! Dummy data
-
-  const products: IProduct[] = [];
-  const total = 0;
-
-  //! **
+  const { product: products, total } = useAppSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
   return (
     <Sheet>
@@ -45,22 +47,23 @@ export default function Cart() {
               </div>
               <div className="px-2 w-full flex flex-col gap-3">
                 <h1 className="text-2xl self-center">{product?.name}</h1>
-                <p>Quantity: {product.quantity}</p>
+                <p>Quantity: {product?.quantity}</p>
                 <p className="text-xl">
                   Total Price: {(product.price * product.quantity!).toFixed(2)}{' '}
                   $
                 </p>
               </div>
               <div className="border-l pl-5 flex flex-col justify-between">
-                <Button>
+                <Button onClick={() => dispatch(addToCart(product))}>
                   <HiOutlinePlus size="20" />
                 </Button>
-                <Button>
+                <Button onClick={() => dispatch(removeOne(product))}>
                   <HiMinus size="20" />
                 </Button>
                 <Button
                   variant="destructive"
                   className="bg-red-500 hover:bg-red-400"
+                  onClick={() => dispatch(removeFromCart(product))}
                 >
                   <HiOutlineTrash size="20" />
                 </Button>
