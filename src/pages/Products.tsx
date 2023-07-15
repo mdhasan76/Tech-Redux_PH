@@ -64,8 +64,8 @@ export default function Products() {
         </div>
       </div>
       <div className="col-span-9 grid grid-cols-3 gap-10 pb-20">
-        {productsData?.map((product) => (
-          <ProductCard product={product} />
+        {productsData?.map((product, i) => (
+          <ProductCard key={i} product={product} />
         ))}
       </div>
     </div>
