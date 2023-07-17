@@ -2,25 +2,20 @@ import ProductCard from '@/components/ProductCard';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { useToast } from '@/components/ui/use-toast';
+import { useMonsaiseProductsQuery } from '@/redux/api/apiSlice';
 import {
   setPriceRange,
   togglestate,
 } from '@/redux/features/product/productSlice';
 import { useAppSelector } from '@/redux/hook';
 import { IProduct } from '@/types/globalTypes';
-import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export default function Products() {
-  const [data, setData] = useState<IProduct[]>([]);
-  useEffect(() => {
-    fetch('./data.json')
-      .then((res) => res.json())
-      .then((data) => setData(data));
-  }, []);
+  // Fetch data using RTK query
+  const { data, isFetching } = useMonsaiseProductsQuery(undefined);
 
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
   const dispatch = useDispatch();
   const { status, priceRange } = useAppSelector((state) => state.product);
@@ -28,17 +23,29 @@ export default function Products() {
   const handleSlider = (value: number[]) => {
     dispatch(setPriceRange(value[0]));
   };
-
+  if (isFetching) {
+    return (
+      <h1 className="text-5xl font-bold text-red-800 text-center mt-40">
+        Loading...
+      </h1>
+    );
+  }
   let productsData;
 
   if (status) {
-    productsData = data.filter(
-      (item) => item.status === true && item.price < priceRange
+    // console.log(data, 'if condition data');
+    productsData = data?.data.filter(
+      (item: { status: boolean; price: number }) =>
+        item.status === true && item.price < priceRange
     );
   } else if (priceRange > 0) {
-    productsData = data.filter((item) => item.price < priceRange);
+    // console.log(data, 'else if second condition data', isFetching);
+    productsData = data?.data.filter(
+      (item: { price: number }) => item.price < priceRange
+    );
   } else {
-    productsData = data;
+    // console.log(data, 'else if last condition data');
+    productsData = data?.data;
   }
 
   return (
@@ -69,7 +76,7 @@ export default function Products() {
         </div>
       </div>
       <div className="col-span-9 grid grid-cols-3 gap-10 pb-20">
-        {productsData?.map((product, i) => (
+        {productsData?.map((product: IProduct, i: number) => (
           <ProductCard key={i} product={product} />
         ))}
       </div>
