@@ -12,8 +12,27 @@ import {
 import { HiOutlineSearch } from 'react-icons/hi';
 import Cart from '../components/Cart';
 import logo from '../assets/images/technet-logo.png';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { setError, setUser } from '@/redux/features/user/userSlice';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export default function Navbar() {
+  const { user } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+
+  const handleLogOut = () => {
+    signOut(auth)
+      .then(() => {
+        dispatch(setUser(null));
+      })
+      .catch((error) => {
+        dispatch(setError(error.message));
+      });
+
+    console.log('logout click');
+  };
+
   return (
     <nav className="w-full h-16 fixed top backdrop-blur-lg z-10">
       <div className="h-full w-full bg-white/60">
@@ -69,6 +88,27 @@ export default function Navbar() {
                     <DropdownMenuItem className="cursor-pointer">
                       Subscription
                     </DropdownMenuItem>
+                    {!user.email ? (
+                      <Link to="/login">
+                        <DropdownMenuItem className="cursor-pointer">
+                          Loin In
+                        </DropdownMenuItem>
+                      </Link>
+                    ) : (
+                      <Link to="/signup">
+                        <DropdownMenuItem className="cursor-pointer">
+                          Sign Up
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
+                    {user.email && (
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={handleLogOut}
+                      >
+                        Logout
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </li>

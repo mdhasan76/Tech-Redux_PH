@@ -3,7 +3,10 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { FiSend } from 'react-icons/fi';
-import { useCommentsQuery, usePostCommentMutation } from '@/redux/api/apiSlice';
+import {
+  useCommentsQuery,
+  usePostCommentMutation,
+} from '@/redux/features/product/productApi';
 
 interface IProps {
   id: string;
